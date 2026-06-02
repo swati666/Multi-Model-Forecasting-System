@@ -1,371 +1,376 @@
-
 import streamlit as st
 import pandas as pd
 import joblib
 import requests
 import plotly.express as px
-import json
-
 
 # ==================================================
+
 # PAGE CONFIG
+
 # ==================================================
 
 st.set_page_config(
-    page_title="Sales Forecasting Dashboard",
-    page_icon="📈",
-    layout="wide"
+page_title="Sales Forecasting Dashboard",
+page_icon="📈",
+layout="wide"
 )
 
-
 # ==================================================
-# LOAD REGISTRIES
+
+# LOAD METRICS REGISTRY
+
 # ==================================================
 
 @st.cache_resource
 def load_registries():
 
-    with open(
-        "models/best_model_registry.json",
-        "r"
-    ) as f:
-
-        best_model_registry = json.load(f)
-
-    metrics_registry = joblib.load(
-        "metrics_registry.pkl"
-    )
-
-    return (
-        best_model_registry,
-        metrics_registry
-    )
-
-
-best_model_registry, metrics_registry = (
-    load_registries()
+```
+metrics_registry = joblib.load(
+    "metrics_registry.pkl"
 )
 
+return metrics_registry
+```
+
+metrics_registry = load_registries()
 
 # ==================================================
+
 # FASTAPI URL
+
 # ==================================================
 
-# API_URL = "http://localhost:8080"
 API_URL = "https://multi-model-forecasting-system.onrender.com"
 
 # ==================================================
+
 # HEADER
+
 # ==================================================
 
 st.title(
-    "📈 Multi-State Sales Forecasting Dashboard"
+"📈 Multi-State Sales Forecasting Dashboard"
 )
 
 st.markdown(
-    """
-    Interactive forecasting platform with automatic best-model selection.
+"""
+Interactive forecasting platform with automatic best-model selection.
 
-    **Models Benchmarked**
+```
+**Models Benchmarked**
 
-    - XGBoost
-    - LSTM
-    - SARIMA
-    - Prophet
+- XGBoost
+- LSTM
+- SARIMA
+- Prophet
 
-    Forecast horizon: **8 Weeks**
-    """
+Forecast horizon: **8 Weeks**
+"""
+```
+
 )
 
 st.markdown("---")
 
-
 # ==================================================
+
 # SIDEBAR
+
 # ==================================================
 
 st.sidebar.title(
-    "Forecast Controls"
+"Forecast Controls"
 )
 
 states = sorted(
-    list(
-        best_model_registry.keys()
-    )
+list(
+metrics_registry.keys()
 )
-#here will make change
+)
+
 selected_state = st.sidebar.selectbox(
-    "Select State",
-    states
+"Select State",
+states
 )
 
 generate = st.sidebar.button(
-    "🚀 Generate Forecast",
-    use_container_width=True
+"🚀 Generate Forecast",
+use_container_width=True
 )
 
-
 # ==================================================
+
 # INITIAL MESSAGE
+
 # ==================================================
 
 if not generate:
 
-    st.info(
-        """
-        Select a state from the sidebar and click
-        **Generate Forecast**
-        """
+```
+st.info(
+    """
+    Select a state from the sidebar and click
+    **Generate Forecast**
+    """
+)
+
+st.stop()
+```
+
+# ==================================================
+
+# API REQUEST
+
+# ==================================================
+
+with st.spinner(
+"Generating 8-week forecast..."
+):
+
+```
+try:
+
+    response = requests.get(
+        f"{API_URL}/forecast/{selected_state}",
+        timeout=60
+    )
+
+    if response.status_code != 200:
+
+        st.error(
+            "Forecast API returned an error."
+        )
+
+        st.stop()
+
+    forecast_response = response.json()
+
+except requests.exceptions.ConnectionError:
+
+    st.error(
+        "Unable to connect to FastAPI service."
     )
 
     st.stop()
 
+except requests.exceptions.Timeout:
+
+    st.error(
+        "Forecast request timed out."
+    )
+
+    st.stop()
+
+except Exception as e:
+
+    st.error(
+        f"Unexpected error: {e}"
+    )
+
+    st.stop()
+```
 
 # ==================================================
-# API REQUEST
-# ==================================================
 
-with st.spinner(
-    "Generating 8-week forecast..."
-):
-
-    try:
-
-        response = requests.get(
-            f"{API_URL}/forecast/{selected_state}",
-            timeout=60
-        )
-
-        if response.status_code != 200:
-
-            st.error(
-                "Forecast API returned an error."
-            )
-
-            st.stop()
-
-        forecast_response = (
-            response.json()
-        )
-
-    except requests.exceptions.ConnectionError:
-
-        st.error(
-            """
-            FastAPI server is not running.
-
-            Start backend first:
-
-            uvicorn app:app --reload
-            """
-        )
-
-        st.stop()
-
-    except requests.exceptions.Timeout:
-
-        st.error(
-            "Forecast request timed out."
-        )
-
-        st.stop()
-
-    except Exception as e:
-
-        st.error(
-            f"Unexpected error: {e}"
-        )
-
-        st.stop()
-
-
-# ==================================================
 # EXTRACT RESPONSE
+
 # ==================================================
 
 best_model = forecast_response[
-    "best_model"
+"best_model"
 ]
 
 forecast_df = pd.DataFrame(
-    forecast_response[
-        "forecast"
-    ]
+forecast_response[
+"forecast"
+]
 )
 
 metrics_df = metrics_registry[
-    selected_state
+selected_state
 ]
 
 model_metrics = metrics_df[
-    metrics_df["Model"]
-    == best_model
+metrics_df["Model"]
+== best_model
 ].iloc[0]
 
-
 # ==================================================
+
 # PAGE TITLE
+
 # ==================================================
 
 st.subheader(
-    f"📍 Forecast for {selected_state}"
+f"📍 Forecast for {selected_state}"
 )
 
 st.caption(
-    f"Automatically selected model: {best_model}"
+f"Automatically selected model: {best_model}"
 )
 
 st.markdown("---")
 
-
 # ==================================================
+
 # KPI CARDS
+
 # ==================================================
 
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
 
-    st.metric(
-        label="🏆 Best Model",
-        value=best_model
-    )
+```
+st.metric(
+    label="🏆 Best Model",
+    value=best_model
+)
+```
 
 with col2:
 
-    st.metric(
-        label="RMSE",
-        value=f"{model_metrics['RMSE']:,.0f}"
-    )
+```
+st.metric(
+    label="RMSE",
+    value=f"{model_metrics['RMSE']:,.0f}"
+)
+```
 
 with col3:
 
-    st.metric(
-        label="MAE",
-        value=f"{model_metrics['MAE']:,.0f}"
-    )
+```
+st.metric(
+    label="MAE",
+    value=f"{model_metrics['MAE']:,.0f}"
+)
+```
 
 with col4:
 
-    st.metric(
-        label="MAPE",
-        value=f"{model_metrics['MAPE']:.2f}%"
-    )
-
+```
+st.metric(
+    label="MAPE",
+    value=f"{model_metrics['MAPE']:.2f}%"
+)
+```
 
 st.caption(
-    f"{best_model} achieved the lowest MAPE for {selected_state}"
+f"{best_model} achieved the lowest MAPE for {selected_state}"
 )
 
 st.markdown("---")
 
-
 # ==================================================
+
 # FORECAST CHART
+
 # ==================================================
 
 st.subheader(
-    "📅 8-Week Sales Forecast"
+"📅 8-Week Sales Forecast"
 )
 
 forecast_df["date"] = pd.to_datetime(
-    forecast_df["date"]
+forecast_df["date"]
 )
 
 fig = px.line(
-    forecast_df,
-    x="date",
-    y="forecast",
-    markers=True,
-    title=f"{selected_state} Forecast Trend"
+forecast_df,
+x="date",
+y="forecast",
+markers=True,
+title=f"{selected_state} Forecast Trend"
 )
 
 fig.update_layout(
-    xaxis_title="Forecast Week",
-    yaxis_title="Sales",
-    hovermode="x unified"
+xaxis_title="Forecast Week",
+yaxis_title="Sales",
+hovermode="x unified"
 )
 
 st.plotly_chart(
-    fig,
-    use_container_width=True
+fig,
+use_container_width=True
 )
 
-
 # ==================================================
+
 # FORECAST TABLE
+
 # ==================================================
 
 st.subheader(
-    "Forecast Data"
+"Forecast Data"
 )
 
 display_df = forecast_df.copy()
 
 display_df.columns = [
-    "Date",
-    "Forecast"
+"Date",
+"Forecast"
 ]
 
 display_df["Forecast"] = (
-    display_df["Forecast"]
-    .round(0)
-    .astype(int)
+display_df["Forecast"]
+.round(0)
+.astype(int)
 )
 
 st.dataframe(
-    display_df,
-    use_container_width=True
+display_df,
+use_container_width=True
 )
 
 st.markdown("---")
 
-
 # ==================================================
+
 # MODEL COMPARISON TABLE
+
 # ==================================================
 
 st.subheader(
-    "📊 Model Benchmark Comparison"
+"📊 Model Benchmark Comparison"
 )
 
 comparison_df = metrics_df.sort_values(
-    by="MAPE"
+by="MAPE"
 )
 
 st.dataframe(
-    comparison_df,
-    use_container_width=True
+comparison_df,
+use_container_width=True
 )
 
-
 # ==================================================
+
 # MAPE COMPARISON CHART
+
 # ==================================================
 
 metric_fig = px.bar(
-    comparison_df,
-    x="MAPE",
-    y="Model",
-    orientation="h",
-    title="Model Comparison by MAPE"
+comparison_df,
+x="MAPE",
+y="Model",
+orientation="h",
+title="Model Comparison by MAPE"
 )
 
 st.plotly_chart(
-    metric_fig,
-    use_container_width=True
+metric_fig,
+use_container_width=True
 )
 
 st.markdown("---")
 
-
 # ==================================================
+
 # FOOTER
+
 # ==================================================
 
 st.caption(
-    """
-    Built with FastAPI • Streamlit • XGBoost • LSTM • SARIMA • Prophet
-    """
+"Built with FastAPI • Streamlit • XGBoost • LSTM • SARIMA • Prophet"
 )
-
