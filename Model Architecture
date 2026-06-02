@@ -1,0 +1,103 @@
+                                                    ┌───────────────────────────────┐
+                                                    │     DATA UNDERSTANDING        │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │     DATA PREPROCESSING        │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │     FEATURE ENGINEERING       │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │      MODEL TRAINING           │
+                                                    │                               │
+                                                    │  • SARIMA                     │
+                                                    │  • Prophet                    │
+                                                    │  • XGBoost                    │
+                                                    │  • LSTM                       │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │     MODEL EVALUATION          │
+                                                    │                               │
+                                                    │  Compare RMSE / MAE / MAPE    │
+                                                    │  (MAPE used as winner metric) │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │   BEST MODEL SELECTION        │
+                                                    │                               │
+                                                    │ Example:                      │
+                                                    │ Texas      → LSTM             │
+                                                    │ Alabama    → XGBoost          │
+                                                    │ California → LSTM             │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │   MODEL ARTIFACT STORAGE      │
+                                                    │                               │
+                                                    │ Save:                         │
+                                                    │ • XGBoost model (.pkl)        │
+                                                    │ • LSTM models (.keras)        │
+                                                    │ • Scalers (.pkl)              │
+                                                    │ • Metrics registry            │
+                                                    │ • Best model registry         │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                ══════════════════════════════════════════
+                                                      PRODUCTION INFERENCE LAYER
+                                                ══════════════════════════════════════════
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │       FASTAPI ENDPOINT        │
+                                                    │                               │
+                                                    │   GET /forecast/{state}       │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │      MODEL ROUTING LOGIC      │
+                                                    │                               │
+                                                    │ Lookup best_model_registry    │
+                                                    │                               │
+                                                    │ Example:                      │
+                                                    │ Texas → LSTM                  │
+                                                    └───────────────────────────────┘
+                                                                    ↓
+                                                        ┌──────────────   ───┬
+                                                        │                    │                 
+                                                        ▼                    ▼
+                                                ┌──────────────────┐   ┌──────────────────┐
+                                                │   XGBOOST PATH   │   │    LSTM PATH     │
+                                                └──────────────────┘   └──────────────────┘
+                                                            │                         │
+                                                            ▼                         ▼
+                                                    Recursive lag-based         Recursive sequence-based
+                                                    forecast generation         forecast generation
+                                                    (8 weeks)                   (8 weeks)
+                                                        │                         │
+                                                        └──────────────┬──────────┘
+                                                                       ▼
+                                                        ┌───────────────────────────────┐
+                                                        │       JSON API RESPONSE       │
+                                                        │                               │
+                                                        │ {                             │
+                                                        │   "state": "Texas",           │
+                                                        │   "best_model": "LSTM",       │
+                                                        │   "forecast": [...]           │
+                                                        │ }                             │
+                                                        └───────────────────────────────┘
+                                                                    ↓
+                                                ══════════════════════════════════════════
+                                                            PRESENTATION LAYER
+                                                ══════════════════════════════════════════
+                                                                    ↓
+                                                    ┌───────────────────────────────┐
+                                                    │      STREAMLIT DASHBOARD      │
+                                                    │                               │
+                                                    │ • State selector              │
+                                                    │ • Forecast chart              │
+                                                    │ • KPI metrics                 │
+                                                    │ • Model comparison chart      │
+                                                    └───────────────────────────────┘

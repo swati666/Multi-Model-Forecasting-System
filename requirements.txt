@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+tensorflow
+xgboost
+prophet
+pandas
+numpy
+scikit-learn
+joblib
+holidays
+plotly
+streamlit
+requests
