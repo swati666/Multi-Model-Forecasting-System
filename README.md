@@ -1,10 +1,10 @@
-# 📈 Multi-Model Sales Forecasting System
+#  Multi-Model Sales Forecasting System
 
 End-to-End Time Series Forecasting Platform using XGBoost, LSTM, SARIMA, and Prophet with Automatic Model Selection, FastAPI Deployment, Docker Containerization, and Interactive Streamlit Dashboard.
 
 ---
 
-# 🚀 Project Overview
+#  Project Overview
 
 Accurate sales forecasting is critical for inventory planning, demand estimation, budgeting, and business decision-making.
 
@@ -32,7 +32,7 @@ Instead of relying on a single forecasting algorithm, this project builds a prod
 
 ---
 
-# 📊 Dataset
+#  Dataset
 
 The dataset contains weekly sales records across 43 U.S. states from 2019 to 2023.
 
@@ -47,7 +47,7 @@ The dataset contains weekly sales records across 43 U.S. states from 2019 to 202
 
 ---
 
-# 🎯 Business Problem
+#  Business Problem
 
 Forecast the next 8 weeks of sales for every state using historical sales data.
 
@@ -116,7 +116,7 @@ Interactive Streamlit Dashboard
 
 ---
 
-# 🧠 Feature Engineering
+#  Feature Engineering
 
 ### Lag Features
 
@@ -152,7 +152,7 @@ holidays.US()
 
 ---
 
-# 🤖 Forecasting Models
+#  Forecasting Models
 
 ## 1️⃣ XGBoost
 
@@ -215,7 +215,7 @@ This creates a dynamic forecasting engine capable of adapting to different regio
 
 ---
 
-# 📏 Evaluation Metrics
+#  Evaluation Metrics
 
 ### RMSE
 
@@ -239,7 +239,7 @@ Lower values indicate better forecasting performance.
 
 ---
 
-# 🌐 FastAPI Backend
+#  FastAPI Backend
 
 The forecasting engine is exposed through REST APIs.
 
@@ -338,7 +338,7 @@ Both FastAPI and Streamlit applications were containerized using Docker.
 
 ---
 
-# ☁️ Deployment
+#  Deployment
 
 ## FastAPI
 
@@ -360,7 +360,7 @@ https://multi-state-sales-forecasting-system.onrender.com/
 
 ---
 
-# 🛠️ Tech Stack
+#  Tech Stack
 
 ### Programming
 
@@ -403,7 +403,7 @@ https://multi-state-sales-forecasting-system.onrender.com/
 
 ---
 
-# 📂 Project Structure
+#  Project Structure
 
 ```text
 Forecast_Project/
@@ -431,7 +431,7 @@ Forecast_Project/
 
 ---
 
-# 🎓 Key Learnings
+#  Key Learnings
 
 * Time Series Forecasting
 * Feature Engineering for Temporal Data
@@ -446,7 +446,7 @@ Forecast_Project/
 
 ---
 
-# 🔮 Future Improvements
+#  Future Improvements
 
 * Automated model retraining
 * MLflow experiment tracking
@@ -459,7 +459,7 @@ Forecast_Project/
 
 ---
 
-# 👩‍💻 Author
+#  Author
 
 **Swati Yadav**
 
