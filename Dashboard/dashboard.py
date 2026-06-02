@@ -25,11 +25,13 @@ def load_registries():
 
 
 metrics_registry = load_registries()
+
 # FASTAPI URL
 
-API_URL = "http://localhost:8080"
+# API_URL = "http://localhost:8080"
 
 API_URL = "https://multi-model-forecasting-system.onrender.com"
+
 
 # HEADER
 
@@ -51,36 +53,41 @@ Forecast horizon: **8 Weeks**
 
 st.markdown("---")
 
+
+
+# ==================================================
 # SIDEBAR
+# ==================================================
 
-
-st.sidebar.title("Forecast Controls")
-
-states = sorted(
-    list(
-        metrics_registry.keys()
-    )
+st.sidebar.title(
+    "Forecast Controls"
 )
 
-#here will make changeselected_state = st.sidebar.selectbox("Select State",states)
+states = sorted(
+    list(metrics_registry.keys())
+)
 
-generate = st.sidebar.button("🚀 Generate Forecast",use_container_width=True)
+selected_state = st.sidebar.selectbox(
+    "Select State",
+    states
+)
 
+if "generate" not in st.session_state:
+    st.session_state.generate = False
 
-# INITIAL MESSAGE
+if st.sidebar.button(
+    "🚀 Generate Forecast",
+    use_container_width=True
+):
+    st.session_state.generate = True
 
-
-if not generate:
-
+if not st.session_state.generate:
     st.info(
         """
-        Select a state from the sidebar and click
-        **Generate Forecast**
+        Select a state and click Generate Forecast
         """
     )
-
-st.stop()
-
+    st.stop()
 # API REQUEST
 
 
